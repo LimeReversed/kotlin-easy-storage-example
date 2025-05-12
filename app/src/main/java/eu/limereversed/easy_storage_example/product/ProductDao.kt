@@ -1,4 +1,4 @@
-package eu.limereversed.easy_storage_example
+package eu.limereversed.easy_storage_example.product
 
 import androidx.room.Dao
 import androidx.room.Delete

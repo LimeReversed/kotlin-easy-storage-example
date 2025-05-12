@@ -1,21 +1,25 @@
-package eu.limereversed.easy_storage_example
+package eu.limereversed.easy_storage_example.product
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import eu.limereversed.easy_storage_example.Graph
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import eu.limereversed.easy_storage_example.events.Event
 
 // ViewModel is the holder of states and business logic.
 class ProductViewModel(private val productRepository: ProductRepository = Graph.productRepository) : ViewModel() {
 
     var productSerialNumberState by mutableIntStateOf(-1)
     var productPriceState by mutableIntStateOf(-1)
-    val sharedFlow = MutableSharedFlow<String>()
+    private val _sharedFlow = MutableSharedFlow<Event>()
+    val sharedFlow: SharedFlow<Event> = _sharedFlow
 
 
     fun onProductSerialNumberChange(newSerialNumber:Int){
@@ -33,13 +37,6 @@ class ProductViewModel(private val productRepository: ProductRepository = Graph.
         viewModelScope.launch {
             getProducts = productRepository.getProducts()
         }
-
-        // Starting event listener
-        viewModelScope.launch(Dispatchers.IO) {
-            sharedFlow.collect { value ->
-                println("Collector 1 received: $value")
-            }
-        }
     }
 
     fun getProductById(id:Long): Flow<Product> {
@@ -49,7 +46,7 @@ class ProductViewModel(private val productRepository: ProductRepository = Graph.
     fun addProduct(productEntity: Product) {
         viewModelScope.launch(Dispatchers.IO) {
             productRepository.addProduct(productEntity)
-            sharedFlow.emit("********************************** Item added! Yay!")
+            _sharedFlow.emit(Event.ProductAdded(productEntity))
         }
     }
 

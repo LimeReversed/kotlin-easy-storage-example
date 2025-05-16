@@ -41,8 +41,6 @@ fun StoreListApp(innerPadding: PaddingValues) {
     val products = pViewModel.getProducts.collectAsState(initial = listOf<Product>()).value
     val owners = oViewModel.getOwners.collectAsState(initial = listOf<Owner>()).value
 
-    val productAddedExecutors = CopyOnWriteArraySet<() -> Unit>()
-
     LaunchedEffect(Unit) {
         pViewModel.sharedFlow.collect { event ->
             when (event){

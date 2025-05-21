@@ -28,29 +28,22 @@ import eu.limereversed.easy_storage_example.owner.Owner
 import eu.limereversed.easy_storage_example.owner.OwnerViewModel
 import eu.limereversed.easy_storage_example.product.Product
 import eu.limereversed.easy_storage_example.product.ProductViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
-import java.util.concurrent.CopyOnWriteArraySet
-import androidx.lifecycle.viewModelScope
 import eu.limereversed.easy_storage_example.events.Event
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import eu.limereversed.easy_storage_example.owner.OwnerWithProducts
-import kotlin.Int
 
 @Composable
 fun StoreListApp(innerPadding: PaddingValues) {
     // StoreListApp.kt
     val pViewModel: ProductViewModel = viewModel()
     val oViewModel: OwnerViewModel = viewModel()
-    val products = pViewModel.getProducts.collectAsState(initial = listOf<Product>()).value
     val owners = oViewModel.getOwners.collectAsState(initial = listOf<Owner>()).value
     var currentOwnerIndex by remember { mutableIntStateOf(0) }
     val ownerIds = owners.map { it.id }
-    val currentOwner = oViewModel
+    val currentOwner: OwnerWithProducts? = oViewModel
         .getOwnerWithProducts(ownerIds.getOrNull(currentOwnerIndex) ?: 0L)
         .collectAsState(
             initial = OwnerWithProducts(Owner(0, ""), emptyList())
@@ -87,12 +80,9 @@ fun StoreListApp(innerPadding: PaddingValues) {
                 }) {
                 Text("Add Owner")
             }
-            if (owners.size > 0) {
+            if (owners.isNotEmpty()) {
                 Button(onClick = {
                     currentOwnerIndex = if (currentOwnerIndex == owners.size - 1) 0 else currentOwnerIndex + 1
-                    println("Index: " + currentOwnerIndex)
-                    println("Name: " + currentOwner.owner.name)
-                    println("ID: " + currentOwner.owner.id)
                 }) {
                     Text("Next owner")
                 }
@@ -105,7 +95,7 @@ fun StoreListApp(innerPadding: PaddingValues) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (owners.size > 0) {
+        if (owners.isNotEmpty()) {
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -114,20 +104,20 @@ fun StoreListApp(innerPadding: PaddingValues) {
                 Button(
                     onClick = {
                         pViewModel.addAndAssignProductTo(
-                            currentOwner.owner.id,
+                            currentOwner?.owner?.id,
                             Product(
                                 serialNumber = (0..1000).random(),
                                 price = (1..50).random()
                             )
                         )
-                        println("Index: " + currentOwnerIndex)
-                        println("Name: " + currentOwner.owner.name)
-                        println("ID: " + currentOwner.owner.id)
                     }) {
                     Text("Give product")
                 }
                 Button(onClick = {
-                    oViewModel.unassignProductFromOwner(currentOwner.owner.id, currentOwner.products[currentOwner.products.size - 1].id)
+                    if (currentOwner != null) {
+                        val productID = currentOwner.products[currentOwner.products.size - 1].id
+                        oViewModel.unassignProductFromOwner(currentOwner.owner.id, productID)
+                    }
                 }) {
                     Text("Steal product")
                 }

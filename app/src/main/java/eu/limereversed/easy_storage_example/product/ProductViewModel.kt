@@ -51,7 +51,10 @@ class ProductViewModel(private val productRepository: ProductRepository = Graph.
         }
     }
 
-    fun addAndAssignProductTo(ownerId: Long, productEntity: Product) {
+    fun addAndAssignProductTo(ownerId: Long?, productEntity: Product?) {
+
+        if (ownerId == null || productEntity == null) return
+
         viewModelScope.launch(Dispatchers.IO) {
             val newID = productRepository.addProduct(productEntity)
             ownerRepository.assignProductToOwner(ownerId, newID)

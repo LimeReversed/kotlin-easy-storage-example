@@ -67,7 +67,9 @@ class OwnerViewModel(private val ownerRepository: OwnerRepository = Graph.ownerR
         }
     }
 
-    fun unassignProductFromOwner(ownerId: Long, productId: Long) {
+    fun unassignProductFromOwner(ownerId: Long?, productId: Long?) {
+        if (ownerId == null || productId == null) return
+
         viewModelScope.launch(Dispatchers.IO) {
             ownerRepository.unassignProductFromOwner(ownerId, productId)
         }

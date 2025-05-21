@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import eu.limereversed.easy_storage_example.Graph
+import eu.limereversed.easy_storage_example.Graph.ownerRepository
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +47,14 @@ class ProductViewModel(private val productRepository: ProductRepository = Graph.
     fun addProduct(productEntity: Product) {
         viewModelScope.launch(Dispatchers.IO) {
             productRepository.addProduct(productEntity)
+            _sharedFlow.emit(Event.ProductAdded(productEntity))
+        }
+    }
+
+    fun addAndAssignProductTo(ownerId: Long, productEntity: Product) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val newID = productRepository.addProduct(productEntity)
+            ownerRepository.assignProductToOwner(ownerId, newID)
             _sharedFlow.emit(Event.ProductAdded(productEntity))
         }
     }

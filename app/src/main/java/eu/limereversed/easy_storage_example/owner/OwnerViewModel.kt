@@ -39,6 +39,10 @@ class OwnerViewModel(private val ownerRepository: OwnerRepository = Graph.ownerR
         return ownerRepository.getOwnerById(id)
     }
 
+    fun getOwnerWithProducts(id:Long): Flow<OwnerWithProducts> {
+        return ownerRepository.getOwnerWithProducts(id)
+    }
+
     fun addOwner(ownerEntity: Owner) {
         viewModelScope.launch(Dispatchers.IO) {
             ownerRepository.addOwner(ownerEntity)
@@ -54,6 +58,18 @@ class OwnerViewModel(private val ownerRepository: OwnerRepository = Graph.ownerR
     fun updateOwner(ownerEntity: Owner) {
         viewModelScope.launch(Dispatchers.IO) {
             ownerRepository.updateOwner(ownerEntity)
+        }
+    }
+
+    fun assignProductToOwner(ownerId: Long, productId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            ownerRepository.assignProductToOwner(ownerId, productId)
+        }
+    }
+
+    fun unassignProductFromOwner(ownerId: Long, productId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            ownerRepository.unassignProductFromOwner(ownerId, productId)
         }
     }
 }

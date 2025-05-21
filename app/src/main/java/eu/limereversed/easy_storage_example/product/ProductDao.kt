@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 abstract class ProductDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun addProduct(productEntity: Product)
+    abstract suspend fun addProduct(productEntity: Product): Long
 
     @Query("Select * from `product-table`")
     abstract fun getAllProducts(): Flow<List<Product>>

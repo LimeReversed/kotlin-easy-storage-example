@@ -9,20 +9,20 @@ import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-abstract class ProductDao {
+interface ProductDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun addProduct(productEntity: Product): Long
+    suspend fun addProduct(productEntity: Product): Long
 
     @Query("Select * from `product-table`")
-    abstract fun getAllProducts(): Flow<List<Product>>
+    fun getAllProducts(): Flow<List<Product>>
 
     @Update
-    abstract suspend fun updateProduct(productEntity: Product)
+    suspend fun updateProduct(productEntity: Product)
 
     @Delete
-    abstract suspend fun deleteProduct(productEntity: Product)
+    suspend fun deleteProduct(productEntity: Product)
 
     @Query("Select * from `product-table` where id=:id")
-    abstract fun getProductById(id: Long): Flow<Product>
+    fun getProductById(id: Long): Flow<Product>
 }

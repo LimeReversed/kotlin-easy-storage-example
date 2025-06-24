@@ -10,24 +10,24 @@ import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-abstract class OwnerDao {
+interface OwnerDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun addOwner(ownerEntity: Owner)
+    suspend fun addOwner(ownerEntity: Owner)
 
     @Query("Select * from `owner-table`")
-    abstract fun getAllOwners(): Flow<List<Owner>>
+    fun getAllOwners(): Flow<List<Owner>>
 
     @Update
-    abstract suspend fun updateOwner(ownerEntity: Owner)
+    suspend fun updateOwner(ownerEntity: Owner)
 
     @Delete
-    abstract suspend fun deleteOwner(ownerEntity: Owner)
+    suspend fun deleteOwner(ownerEntity: Owner)
 
     @Query("Select * from `owner-table` where id=:id")
-    abstract fun getOwnerById(id: Long): Flow<Owner>
+    fun getOwnerById(id: Long): Flow<Owner>
 
     @Transaction
     @Query("Select * from `owner-table` where id= :ownerID")
-    abstract fun getOwnerWithProducts(ownerID: Long): Flow<OwnerWithProducts>
+    fun getOwnerWithProducts(ownerID: Long): Flow<OwnerWithProducts>
 }
